@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dark Green Barcode Generator</title>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+<style>
+  * {
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  body {
+    margin: 0;
+    background-color: #0b2614;
+    color: #d0f0c0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 1.5rem;
+  }
+
+  .container {
+    background: #1e3a1b;
+    border-radius: 16px;
+    padding: 2.5rem 2.5rem 3rem;
+    max-width: 440px;
+    width: 100%;
+    box-shadow: 0 0 30px #39b54aaa;
+    text-align: center;
+  }
+
+  h1 {
+    color: #39b54a;
+    font-weight: 700;
+    font-size: 1.8rem;
+    margin-bottom: 1.6rem;
+    letter-spacing: 1px;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.2rem;
+    font-size: 1rem;
+    border: 2px solid #39b54a;
+    border-radius: 10px;
+    background: #2d4e26;
+    color: #d0f0c0;
+    outline-offset: 3px;
+    transition: border-color 0.3s ease;
+  }
+
+  input[type="text"]:focus {
+    border-color: #7eea72;
+    background: #3a6c36;
+  }
+
+  button {
+    background-color: #39b54a;
+    border: none;
+    color: #0b2614;
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 0.9rem;
+    border-radius: 12px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.25s ease;
+  }
+
+  button:hover {
+    background-color: #7eea72;
+  }
+
+  canvas#barcodeCanvas {
+    margin-top: 2rem;
+    border-radius: 14px;
+    background: #fff;
+    width: 100%;
+    height: 180px;
+    box-shadow: 0 0 10px #39b54aaa inset;
+  }
+
+  #productNameDisplay {
+    margin-top: 0.8rem;
+    font-weight: 600;
+    color: #a6d8a8;
+  }
+</style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Morrisons Generator</h1>
+
+    <input
+      type="text"
+      id="productCode"
+      placeholder="Enter product barcode digits"
+      maxlength="20"
+      pattern="\d*"
+      inputmode="numeric"
+      oninput="this.value=this.value.replace(/\D/g,'').slice(0,20)"
+      onpaste="setTimeout(() => this.value=this.value.replace(/\D/g,'').slice(0,20), 0)"
+    />
+
+    <input
+      type="text"
+      id="productName"
+      placeholder="Enter product name (optional)"
+      maxlength="50"
+    />
+
+    <button onclick="generateBarcode()">Generate</button>
+    <div style="margin-top: 0.5rem; font-size: 0.9rem; color: #7eea72; font-weight: 600;">
+      changes price to 3p | made by CodeHub
+    </div>
+
+    <canvas id="barcodeCanvas" width="440" height="180"></canvas>
+    <div id="productNameDisplay"></div>
+
+    <button onclick="downloadBarcode()" style="margin-top: 1rem;">Download PNG</button>
+  </div>
+
+<script>
+  function generateBarcode() {
+    const code = document.getElementById('productCode').value.trim();
+    const productName = document.getElementById('productName').value.trim();
+
+    if (!/^\d+$/.test(code)) {
+      alert('Please enter digits only for the barcode.');
+      return;
+    }
+
+    const finalData = `92${code}000000000027`;
+
+    JsBarcode('#barcodeCanvas', finalData, {
+      format: 'CODE128',
+      lineColor: '#000', // black bars
+      background: '#fff', // white background
+      width: 2,
+      height: 70,
+      fontSize: 18,
+      margin: 10,
+      displayValue: true,
+    });
+
+    document.getElementById('productNameDisplay').textContent = productName ? `Product: ${productName}` : '';
+  }
+
+  function downloadBarcode() {
+    const canvas = document.getElementById('barcodeCanvas');
+    const link = document.createElement('a');
+    link.download = 'morrisons_barcode.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }
+</script>
+
+</body>
+</html>
